@@ -1,0 +1,4 @@
+# Large originals (over GitHub 100 MB limit) - kept locally only
+*.mov
+dad-video-original.mp4
+.DS_Store

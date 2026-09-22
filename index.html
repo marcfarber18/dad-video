@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hi Dad</title>
+
+<!-- Keep this page out of search engines -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="referrer" content="no-referrer">
+
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<meta name="format-detection" content="telephone=no">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #ffffff;
+    color: #111111;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #home {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 44px;
+    padding: max(32px, env(safe-area-inset-top)) 24px max(32px, env(safe-area-inset-bottom));
+    text-align: center;
+  }
+
+  h1 {
+    font-size: clamp(56px, 16vw, 96px);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .message {
+    font-size: clamp(32px, 9vw, 52px);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  #watch {
+    width: 100%;
+    max-width: 520px;
+    min-height: 140px;
+    padding: 28px 16px;
+    border: none;
+    border-radius: 28px;
+    background: #1a5fd0;
+    color: #ffffff;
+    font: inherit;
+    font-size: clamp(36px, 10vw, 56px);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    touch-action: manipulation;
+    box-shadow: 0 6px 0 #103d88;
+  }
+
+  #watch:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #103d88;
+  }
+
+  .reassure {
+    font-size: clamp(30px, 8.5vw, 48px);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #2e7d32;
+  }
+
+  /* Video layer: only shown while playing */
+  #player {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000000;
+  }
+
+  #player.on { display: block; }
+
+  #video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000000;
+  }
+</style>
+</head>
+<body>
+
+<main id="home">
+  <h1>Hi Dad ❤️</h1>
+  <p class="message">I made this video for you.</p>
+  <button id="watch" type="button">▶ WATCH VIDEO</button>
+  <p class="reassure">Everything is okay.</p>
+</main>
+
+<div id="player">
+  <video id="video" src="dad-video.mp4" preload="metadata" controls
+         disablepictureinpicture controlslist="nodownload noplaybackrate noremoteplayback"></video>
+</div>
+
+<script>
+  var home = document.getElementById('home');
+  var player = document.getElementById('player');
+  var video = document.getElementById('video');
+  var button = document.getElementById('watch');
+
+  function goFullscreen() {
+    try {
+      if (video.requestFullscreen) {
+        var p = video.requestFullscreen();
+        if (p && p.catch) p.catch(function () {});
+      } else if (video.webkitEnterFullscreen) {
+        // iPhone Safari
+        video.webkitEnterFullscreen();
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      }
+    } catch (e) {
+      // If fullscreen isn't allowed, the video still fills the screen.
+    }
+  }
+
+  function showHome() {
+    video.pause();
+    player.classList.remove('on');
+    home.style.display = '';
+    window.scrollTo(0, 0);
+  }
+
+  button.addEventListener('click', function () {
+    home.style.display = 'none';
+    player.classList.add('on');
+    video.currentTime = 0;
+    var p = video.play();
+    if (p && p.catch) p.catch(function () {});
+    goFullscreen();
+  });
+
+  // When the video ends, leave fullscreen and return to the start screen.
+  video.addEventListener('ended', function () {
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      else if (video.webkitExitFullscreen) video.webkitExitFullscreen();
+    } catch (e) {}
+    showHome();
+  });
+
+  // If fullscreen is closed early (e.g. "Done" on iPhone), return to the start screen.
+  video.addEventListener('webkitendfullscreen', showHome);
+  document.addEventListener('fullscreenchange', function () {
+    if (!document.fullscreenElement) showHome();
+  });
+</script>
+</body>
+</html>
